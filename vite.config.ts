@@ -14,10 +14,11 @@ export default defineConfig({
       registerType: "autoUpdate",
       injectRegister: null,
       filename: "sw.js",
+      outDir: "dist/client",
       devOptions: { enabled: false },
       manifest: false,
       workbox: {
-        globDirectory: ".output/public",
+        globDirectory: "dist/client",
         globPatterns: ["**/*.{js,css,ico,png,svg,woff2,webmanifest}"],
         navigateFallbackDenylist: [/^\/~oauth/, /^\/api\//],
         runtimeCaching: [
