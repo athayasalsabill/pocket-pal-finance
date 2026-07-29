@@ -29,6 +29,7 @@ function HistoryPage() {
   const { data, deleteTransaction } = useFinance();
   
   // State untuk Filter & Pencarian
+  const [searchKeyword, setSearchKeyword] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
   const [searchDate, setSearchDate] = useState("");
@@ -38,14 +39,27 @@ function HistoryPage() {
   const groups = useMemo(() => {
     const map = new Map<string, typeof data.transactions>();
     
-    // --- FITUR BARU: Logika Penyaringan (Filtering) ---
+    // --- FITUR BARU: Logika Penyaringan (Filtering & Search) ---
     const filteredTransactions = data.transactions.filter((tx) => {
-      // Filter Jenis Transaksi
+      // 1. Filter Jenis Transaksi
       if (filterType !== "all" && tx.type !== filterType) return false;
-      // Filter Kategori (Khusus Expense)
+      // 2. Filter Kategori (Khusus Expense)
       if (filterType === "expense" && filterCategory !== "all" && tx.category !== filterCategory) return false;
-      // Filter Tanggal
+      // 3. Filter Tanggal
       if (searchDate && !tx.date.startsWith(searchDate)) return false;
+      
+      // 4. Filter Kata Kunci (Mencari di catatan, kategori, sumber, atau nominal)
+      if (searchKeyword) {
+        const kw = searchKeyword.toLowerCase();
+        const noteStr = (tx.note || "").toLowerCase();
+        const catStr = (tx.category || "").toLowerCase();
+        const srcStr = (tx.source || "").toLowerCase();
+        const amountStr = String(tx.amount);
+        
+        if (!noteStr.includes(kw) && !catStr.includes(kw) && !srcStr.includes(kw) && !amountStr.includes(kw)) {
+          return false;
+        }
+      }
       
       return true;
     });
@@ -56,14 +70,24 @@ function HistoryPage() {
     });
     
     return [...map.entries()].sort((a, b) => b[0].localeCompare(a[0]));
-  }, [data.transactions, filterType, filterCategory, searchDate]);
+  }, [data.transactions, filterType, filterCategory, searchDate, searchKeyword]);
 
   return (
     <AppShell>
       <Panel title="history">
         
-        {/* --- UI FILTER --- */}
+        {/* --- UI FILTER & SEARCH --- */}
         <div className="mb-5 space-y-2 rounded-md border-2 border-ink/20 bg-card p-3 shadow-sm">
+          
+          {/* Input Kata Kunci */}
+          <TextInput
+            type="text"
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+            placeholder="Cari catatan, kategori, nominal..."
+          />
+
+          {/* Filter Tipe Transaksi */}
           <SelectInput value={filterType} onChange={(e) => {
              setFilterType(e.target.value);
              setFilterCategory("all"); // reset kategori jika jenis berubah
@@ -75,7 +99,7 @@ function HistoryPage() {
             <option value="debt_payment">Pembayaran Utang</option>
           </SelectInput>
 
-          {/* Munculkan filter kategori jika memilih pengeluaran */}
+          {/* Filter Kategori (Muncul jika pilih pengeluaran) */}
           {filterType === "expense" && (
             <SelectInput value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
               <option value="all">Semua Kategori</option>
@@ -85,6 +109,7 @@ function HistoryPage() {
             </SelectInput>
           )}
 
+          {/* Filter Tanggal */}
           <TextInput
             type="date"
             value={searchDate}
@@ -93,10 +118,15 @@ function HistoryPage() {
           />
           
           {/* Tombol Reset jika ada filter aktif */}
-          {(filterType !== "all" || searchDate !== "") && (
+          {(filterType !== "all" || searchDate !== "" || searchKeyword !== "") && (
             <div className="pt-1 text-right">
               <button 
-                onClick={() => { setFilterType("all"); setFilterCategory("all"); setSearchDate(""); }}
+                onClick={() => { 
+                  setFilterType("all"); 
+                  setFilterCategory("all"); 
+                  setSearchDate(""); 
+                  setSearchKeyword(""); 
+                }}
                 className="hand text-base text-ink/70 hover:text-ink underline transition-colors"
               >
                 reset filter
