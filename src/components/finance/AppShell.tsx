@@ -29,7 +29,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="h-2 stripes-thin" />
       </header>
       <main className="mx-auto w-full max-w-md px-3 pt-4 pb-28">{children}</main>
-      <nav className="fixed inset-x-0 bottom-0 z-30 border-t-2 border-ink/15 bg-card pb-[env(safe-area-inset-bottom)]">
+      <nav className="fixed inset-x-0 bottom-0 z-30 border-t-2 border-ink/15 bg-card pb-[calc(env(safe-area-inset-bottom)+16px)]">
         <ul className="mx-auto flex max-w-md items-stretch justify-between px-2">
           {NAV.map(({ to, label, icon: Icon }) => {
             const active = to === "/" ? pathname === "/" : pathname.startsWith(to);
