@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as StatsRouteImport } from './routes/stats'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as DebtsRouteImport } from './routes/debts'
 import { Route as AddRouteImport } from './routes/add'
@@ -19,6 +20,11 @@ import { Route as AccountsAccountIdRouteImport } from './routes/accounts.$accoun
 const StatsRoute = StatsRouteImport.update({
   id: '/stats',
   path: '/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HistoryRoute = HistoryRouteImport.update({
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/add': typeof AddRoute
   '/debts': typeof DebtsRoute
   '/history': typeof HistoryRoute
+  '/settings': typeof SettingsRoute
   '/stats': typeof StatsRoute
   '/accounts/$accountId': typeof AccountsAccountIdRoute
 }
@@ -60,6 +67,7 @@ export interface FileRoutesByTo {
   '/add': typeof AddRoute
   '/debts': typeof DebtsRoute
   '/history': typeof HistoryRoute
+  '/settings': typeof SettingsRoute
   '/stats': typeof StatsRoute
   '/accounts/$accountId': typeof AccountsAccountIdRoute
 }
@@ -69,6 +77,7 @@ export interface FileRoutesById {
   '/add': typeof AddRoute
   '/debts': typeof DebtsRoute
   '/history': typeof HistoryRoute
+  '/settings': typeof SettingsRoute
   '/stats': typeof StatsRoute
   '/accounts/$accountId': typeof AccountsAccountIdRoute
 }
@@ -79,16 +88,25 @@ export interface FileRouteTypes {
     | '/add'
     | '/debts'
     | '/history'
+    | '/settings'
     | '/stats'
     | '/accounts/$accountId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/add' | '/debts' | '/history' | '/stats' | '/accounts/$accountId'
+  to:
+    | '/'
+    | '/add'
+    | '/debts'
+    | '/history'
+    | '/settings'
+    | '/stats'
+    | '/accounts/$accountId'
   id:
     | '__root__'
     | '/'
     | '/add'
     | '/debts'
     | '/history'
+    | '/settings'
     | '/stats'
     | '/accounts/$accountId'
   fileRoutesById: FileRoutesById
@@ -98,6 +116,7 @@ export interface RootRouteChildren {
   AddRoute: typeof AddRoute
   DebtsRoute: typeof DebtsRoute
   HistoryRoute: typeof HistoryRoute
+  SettingsRoute: typeof SettingsRoute
   StatsRoute: typeof StatsRoute
   AccountsAccountIdRoute: typeof AccountsAccountIdRoute
 }
@@ -109,6 +128,13 @@ declare module '@tanstack/react-router' {
       path: '/stats'
       fullPath: '/stats'
       preLoaderRoute: typeof StatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/history': {
@@ -154,6 +180,7 @@ const rootRouteChildren: RootRouteChildren = {
   AddRoute: AddRoute,
   DebtsRoute: DebtsRoute,
   HistoryRoute: HistoryRoute,
+  SettingsRoute: SettingsRoute,
   StatsRoute: StatsRoute,
   AccountsAccountIdRoute: AccountsAccountIdRoute,
 }
