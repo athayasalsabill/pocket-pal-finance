@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Reenie+Beanie&display=swap');
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
@@ -6,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-hand: "Reenie Beanie", "Comic Sans MS", cursive;
+  --font-hand: "Caveat", "Comic Sans MS", cursive;
   --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
 }
 
