@@ -18,7 +18,8 @@ function ImportExcelPage() {
   function processExcel() {
     if (!text.trim()) return;
     
-    const lines = text.split('\n');
+    // Pisahkan berdasarkan baris baru
+    const lines = text.split(/\r?\n/);
     const newAccounts = new Map();
     const accounts: any[] = [];
     const transactions: any[] = [];
@@ -41,34 +42,41 @@ function ImportExcelPage() {
       return id;
     }
 
-    lines.forEach(line => {
+    lines.forEach((line) => {
       const cols = line.split('\t');
-      if (cols.length < 13) return; // Skip baris yang tidak lengkap
+      
+      // Jika kolom kurang dari 4, abaikan (bukan baris transaksi yang valid)
+      if (cols.length < 4) return; 
+      
+      // Abaikan baris header (judul tabel)
+      if (cols[0]?.toLowerCase().includes("timestamp")) return;
       
       const dateVal = cols[1]?.trim();
-      if (!dateVal || dateVal.toLowerCase() === 'date') return; // Skip header
+      if (!dateVal) return; 
       
       // Standarisasi format tanggal
       let dateStr = dateVal.split(' ')[0];
       if (dateStr.includes('/')) {
         const parts = dateStr.split('/');
-        if (parts[2]?.length === 4) { // DD/MM/YYYY -> YYYY-MM-DD
+        if (parts[2]?.length === 4) { // Jika DD/MM/YYYY -> jadikan YYYY-MM-DD
           dateStr = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
         }
       }
       
-      const amount = parseFloat(cols[2]) || 0;
+      // Ambil nilai uang, pastikan formatnya jadi angka yang bersih
+      const amount = Number(cols[2]?.replace(/[^0-9.-]+/g,"")) || 0;
       if (amount <= 0) return;
       
       const transType = (cols[3] || "").trim().toLowerCase();
-      const note = (cols[12] || "").trim();
       
-      // Logika khusus Expense & Debt
+      // Mencegah error jika kolom catatan (kolom ke-13) tidak ada karena kosong di Excel
+      const note = cols.length > 12 ? (cols[12] || "").trim() : "";
+      
+      // Logika Expense & Debt
       if (transType === 'expense' || transType === 'debt') {
-         const accName = cols[6] ? cols[6].trim() : (cols[8] ? cols[8].trim() : "");
-         const catName = cols[7] ? cols[7].trim() : (cols[9] ? cols[9].trim() : "");
+         const accName = cols[6]?.trim() || cols[8]?.trim() || "";
+         const catName = cols[7]?.trim() || cols[9]?.trim() || "";
          
-         // Jika kategorinya "Nalangin", jadikan piutang
          if (catName.toLowerCase() === 'nalangin') {
              debts.push({
                  id: crypto.randomUUID(),
@@ -91,12 +99,11 @@ function ImportExcelPage() {
              });
          }
       } 
-      // Logika khusus Income
+      // Logika Income
       else if (transType === 'income') {
          const accName = (cols[4] || "").trim();
          const source = (cols[5] || "").trim();
          
-         // Jika sumbernya "Payback", jadikan pembayaran utang
          if (source.toLowerCase() === 'payback' || note.toLowerCase().includes('payback')) {
              transactions.push({
                  id: crypto.randomUUID(),
@@ -135,7 +142,7 @@ function ImportExcelPage() {
       }
     });
 
-    if (confirm(`Ditemukan ${accounts.length} akun, ${transactions.length} transaksi, dan ${debts.length} catatan utang/piutang. Proses sekarang?`)) {
+    if (confirm(`Ditemukan ${accounts.length} akun, ${transactions.length} transaksi, dan ${debts.length} catatan piutang/utang. Proses sekarang?`)) {
        replaceAll({ accounts, transactions, debts });
        setMsg(`Berhasil! Data telah tersimpan.`);
        setTimeout(() => navigate({ to: "/" }), 1500);
@@ -144,9 +151,9 @@ function ImportExcelPage() {
 
   return (
     <AppShell>
-      <Panel title="Rahasia: Import Excel">
+      <Panel title="Import Excel">
         <p className="text-sm text-ink/70 mb-4">
-          Buka sheet <strong>"Form Responses 1"</strong> di Excel-mu, blok semua datanya (dari ujung kiri atas sampai kanan bawah), lalu Copy (Ctrl+C), dan Paste (Ctrl+V) di kotak bawah ini.
+          Buka sheet <strong>"Form Responses 1"</strong> di Excel, blok semua baris dan kolom datanya, lalu Copy (Ctrl+C) dan Paste (Ctrl+V) di kotak bawah ini.
         </p>
         <textarea
           value={text}
