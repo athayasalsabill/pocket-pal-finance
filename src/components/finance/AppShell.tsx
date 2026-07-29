@@ -1,16 +1,21 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, PlusCircle, HandCoins, History, PieChart, Settings } from "lucide-react";
+import { Home, PlusCircle, HandCoins, History, PieChart, Settings, ClipboardList } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+
 const NAV = [
   { to: "/", label: "home", icon: Home },
   { to: "/add", label: "add", icon: PlusCircle },
   { to: "/debts", label: "debts", icon: HandCoins },
   { to: "/history", label: "history", icon: History },
   { to: "/stats", label: "stats", icon: PieChart },
+  // --- MENU BARU KITA ---
+  { to: "/budget", label: "budget", icon: ClipboardList }, 
 ] as const;
+
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  
   return (
     <div className="min-h-screen stripes">
       <header className="sticky top-0 z-20">
@@ -28,7 +33,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
         <div className="h-2 stripes-thin" />
       </header>
+      
       <main className="mx-auto w-full max-w-md px-3 pt-4 pb-28">{children}</main>
+      
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t-2 border-ink/15 bg-card pb-[calc(env(safe-area-inset-bottom)+40px)]">
         <ul className="mx-auto flex max-w-md items-stretch justify-between px-2">
           {NAV.map(({ to, label, icon: Icon }) => {
