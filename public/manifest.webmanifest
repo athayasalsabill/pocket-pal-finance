@@ -1,0 +1,16 @@
+{
+  "name": "Duit & Catatan — Finance Tracker",
+  "short_name": "Duit",
+  "description": "Catat pemasukan, pengeluaran, transfer, dan utang. Data tersimpan di HP kamu.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fdf1ce",
+  "theme_color": "#fdf1ce",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
