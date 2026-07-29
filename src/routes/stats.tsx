@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { AppShell } from "@/components/finance/AppShell";
 import { Panel, EmptyNote } from "@/components/finance/Panel";
 import { SelectInput } from "@/components/finance/fields";
@@ -95,33 +95,50 @@ function Stat({ label, value }: { label: string; value: number }) {
 }
 
 function ChartPanel({ title, data }: { title: string; data: { name: string; value: number }[] }) {
-  // --- FITUR BARU: Menghitung Total ---
   const totalValue = data.reduce((sum, item) => sum + item.value, 0);
 
   return (
     <Panel title={title} className="mb-4">
-      {/* Menampilkan Total di atas Chart */}
-      <div className="mb-3 flex items-end justify-between border-b-2 border-ink/10 pb-1 px-1">
-        <span className="hand text-lg text-ink/70">Total</span>
-        <span className="text-base font-bold text-ink">{formatIDR(totalValue)}</span>
-      </div>
-
       {data.length === 0 ? (
         <EmptyNote>Belum ada data.</EmptyNote>
       ) : (
-        <div className="h-64 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie data={data} dataKey="value" nameKey="name" outerRadius={72} label={false}>
-                {data.map((_, i) => (
-                  <Cell key={i} fill={COLORS[i % COLORS.length]} stroke="var(--ink)" />
-                ))}
-              </Pie>
-              <Tooltip formatter={(v: number) => formatIDR(v)} />
-              <Legend verticalAlign="bottom" height={48} />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
+        <>
+          {/* Visual Pie Chart */}
+          <div className="h-48 w-full mb-4">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={data} dataKey="value" nameKey="name" outerRadius={72} label={false}>
+                  {data.map((_, i) => (
+                    <Cell key={i} fill={COLORS[i % COLORS.length]} stroke="var(--ink)" />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(v: number) => formatIDR(v)} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Rincian Angka per Kategori */}
+          <div className="space-y-2 border-t-2 border-ink/10 pt-3">
+            {data.map((item, i) => (
+              <div key={item.name} className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div
+                    className="size-3 rounded-full border border-ink/20"
+                    style={{ backgroundColor: COLORS[i % COLORS.length] }}
+                  />
+                  <span className="text-base text-ink">{item.name}</span>
+                </div>
+                <span className="text-base font-bold text-ink">{formatIDR(item.value)}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Total Keseluruhan */}
+          <div className="mt-3 flex items-center justify-between border-t-2 border-ink/20 pt-2">
+            <span className="hand text-lg font-bold text-ink/80">Total</span>
+            <span className="text-lg font-bold text-ink">{formatIDR(totalValue)}</span>
+          </div>
+        </>
       )}
     </Panel>
   );
