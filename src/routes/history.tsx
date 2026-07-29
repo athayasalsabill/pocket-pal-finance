@@ -3,94 +3,112 @@ import { useMemo, useState } from "react";
 import { AppShell } from "@/components/finance/AppShell";
 import { Panel, EmptyNote } from "@/components/finance/Panel";
 import { TxRow } from "@/components/finance/TxRow";
-// Import field UI yang dibutuhkan
 import { TextInput, SelectInput } from "@/components/finance/fields"; 
 import { useFinance } from "@/lib/finance-store";
-// Import EXPENSE_CATEGORIES untuk filter
-import { monthKey, monthLabel, sortByDateDesc, EXPENSE_CATEGORIES } from "@/lib/finance";
+import { monthKey, monthLabel, EXPENSE_CATEGORIES } from "@/lib/finance";
 import { ChevronDown, ChevronRight } from "lucide-react";
 
 export const Route = createFileRoute("/history")({
-  head: () => ({
-    meta: [
-      { title: "Riwayat Transaksi | Duit & Catatan" },
-      {
-        name: "description",
-        content: "Semua transaksi kamu dikelompokkan per bulan, tinggal expand untuk lihat detail.",
-      },
-      { property: "og:title", content: "Riwayat Transaksi | Duit & Catatan" },
-      { property: "og:description", content: "Transaksi per bulan, rapi dan bisa dibuka-tutup." },
-    ],
-  }),
   component: HistoryPage,
 });
 
 function HistoryPage() {
   const { data, deleteTransaction } = useFinance();
   
-  // State untuk Filter & Pencarian
   const [searchKeyword, setSearchKeyword] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
   const [searchDate, setSearchDate] = useState("");
-  
   const [closed, setClosed] = useState<Record<string, boolean>>({});
+
+  // 1. DATA SAFEGUARD (SISTEM ANTI-CRASH)
+  // Menyediakan akun bayangan agar aplikasi tidak crash jika ada ID Akun yang hilang/dihapus
+  const safeData = useMemo(() => {
+    return {
+      ...data,
+      accounts: [
+        ...(data.accounts || []),
+        { id: "", name: "Akun Tidak Diketahui", type: "cash" as const, initialBalance: 0 }
+      ]
+    };
+  }, [data]);
 
   const groups = useMemo(() => {
     const map = new Map<string, typeof data.transactions>();
     
-    // --- FITUR BARU: Logika Penyaringan (Filtering & Search) ---
-    const filteredTransactions = data.transactions.filter((tx) => {
-      // 1. Filter Jenis Transaksi
-      if (filterType !== "all" && tx.type !== filterType) return false;
-      // 2. Filter Kategori (Khusus Expense)
-      if (filterType === "expense" && filterCategory !== "all" && tx.category !== filterCategory) return false;
-      // 3. Filter Tanggal
-      if (searchDate && !tx.date.startsWith(searchDate)) return false;
+    // Pastikan data.transactions ada, jika tidak jadikan array kosong
+    const rawTxs = data.transactions || [];
+    
+    const filteredTransactions = rawTxs.filter((tx) => {
+      if (!tx) return false;
       
-      // 4. Filter Kata Kunci (Mencari di catatan, kategori, sumber, atau nominal)
+      const safeTxDate = tx.date || "";
+      const safeTxType = tx.type || "";
+      const safeTxCat = tx.category || "";
+      const safeTxSrc = tx.source || "";
+      
+      if (filterType !== "all" && safeTxType !== filterType) return false;
+      if (filterType === "expense" && filterCategory !== "all" && safeTxCat !== filterCategory) return false;
+      if (searchDate && !safeTxDate.startsWith(searchDate)) return false;
+      
       if (searchKeyword) {
         const kw = searchKeyword.toLowerCase();
         const noteStr = (tx.note || "").toLowerCase();
-        const catStr = (tx.category || "").toLowerCase();
-        const srcStr = (tx.source || "").toLowerCase();
-        const amountStr = String(tx.amount);
+        const catStr = safeTxCat.toLowerCase();
+        const srcStr = safeTxSrc.toLowerCase();
+        const amountStr = String(tx.amount || 0);
         
         if (!noteStr.includes(kw) && !catStr.includes(kw) && !srcStr.includes(kw) && !amountStr.includes(kw)) {
           return false;
         }
       }
-      
       return true;
     });
 
-    [...filteredTransactions].sort(sortByDateDesc).forEach((tx) => {
-      const key = monthKey(tx.date);
-      map.set(key, [...(map.get(key) ?? []), tx]);
+    // Urutkan dan kelompokkan secara aman
+    [...filteredTransactions].sort((a, b) => {
+      const dateA = a.date || "";
+      const dateB = b.date || "";
+      return dateB.localeCompare(dateA);
+    }).forEach((tx) => {
+      // Pengecekan agar fungsi pemisah bulan tidak crash saat tanggal rusak
+      const dateVal = tx.date && tx.date.length >= 7 ? tx.date : "2000-01-01";
+      try {
+        const key = monthKey(dateVal);
+        map.set(key, [...(map.get(key) ?? []), tx]);
+      } catch (e) {
+        const fallbackKey = "Unknown";
+        map.set(fallbackKey, [...(map.get(fallbackKey) ?? []), tx]);
+      }
     });
     
     return [...map.entries()].sort((a, b) => b[0].localeCompare(a[0]));
   }, [data.transactions, filterType, filterCategory, searchDate, searchKeyword]);
 
+  // Penambal nama bulan agar tidak rusak
+  const safeMonthLabel = (key: string) => {
+    if (key === "Unknown") return "Tanggal Tidak Valid";
+    try {
+      return monthLabel(key);
+    } catch (e) {
+      return key;
+    }
+  };
+
   return (
     <AppShell>
       <Panel title="history">
         
-        {/* --- UI FILTER & SEARCH --- */}
         <div className="mb-5 space-y-2 rounded-md border-2 border-ink/20 bg-card p-3 shadow-sm">
-          
-          {/* Input Kata Kunci */}
           <TextInput
             type="text"
             value={searchKeyword}
             onChange={(e) => setSearchKeyword(e.target.value)}
             placeholder="Cari catatan, kategori, nominal..."
           />
-
-          {/* Filter Tipe Transaksi */}
           <SelectInput value={filterType} onChange={(e) => {
              setFilterType(e.target.value);
-             setFilterCategory("all"); // reset kategori jika jenis berubah
+             setFilterCategory("all");
           }}>
             <option value="all">Semua Jenis Transaksi</option>
             <option value="expense">Pengeluaran (Expense)</option>
@@ -98,8 +116,6 @@ function HistoryPage() {
             <option value="transfer">Transfer</option>
             <option value="debt_payment">Pembayaran Utang</option>
           </SelectInput>
-
-          {/* Filter Kategori (Muncul jika pilih pengeluaran) */}
           {filterType === "expense" && (
             <SelectInput value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
               <option value="all">Semua Kategori</option>
@@ -108,16 +124,12 @@ function HistoryPage() {
               ))}
             </SelectInput>
           )}
-
-          {/* Filter Tanggal */}
           <TextInput
             type="date"
             value={searchDate}
             onChange={(e) => setSearchDate(e.target.value)}
             placeholder="Cari Tanggal..."
           />
-          
-          {/* Tombol Reset jika ada filter aktif */}
           {(filterType !== "all" || searchDate !== "" || searchKeyword !== "") && (
             <div className="pt-1 text-right">
               <button 
@@ -135,7 +147,6 @@ function HistoryPage() {
           )}
         </div>
 
-        {/* --- DAFTAR TRANSAKSI --- */}
         {groups.length === 0 ? (
           <EmptyNote>Tidak ada transaksi yang cocok.</EmptyNote>
         ) : (
@@ -152,14 +163,23 @@ function HistoryPage() {
                   ) : (
                     <ChevronRight className="size-4 text-ink/60" />
                   )}
-                  <span className="hand flex-1 text-xl text-ink">{monthLabel(key)}</span>
+                  <span className="hand flex-1 text-xl text-ink">{safeMonthLabel(key)}</span>
                   <span className="text-xs text-muted-foreground">{txs.length} transaksi</span>
                 </button>
                 {isOpen && (
                   <div className="px-1 mt-1">
-                    {txs.map((tx) => (
-                      <TxRow key={tx.id} tx={tx} data={data} onDelete={deleteTransaction} />
-                    ))}
+                    {txs.map((tx) => {
+                      // Tambalan agar komponen list per-barisnya kebal terhadap data kosong
+                      const patchedTx = {
+                        ...tx,
+                        date: tx.date || "2000-01-01",
+                        category: tx.category || "Lainnya",
+                        source: tx.source || "Lainnya",
+                      };
+                      return (
+                        <TxRow key={tx.id} tx={patchedTx} data={safeData} onDelete={deleteTransaction} />
+                      );
+                    })}
                   </div>
                 )}
               </div>
