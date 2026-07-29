@@ -1,8 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
 import { AppShell } from "@/components/finance/AppShell";
 import { Panel, EmptyNote } from "@/components/finance/Panel";
-import { Field, TextInput, SelectInput, PrimaryButton, GhostButton } from "@/components/finance/fields";
 import { useFinance } from "@/lib/finance-store";
 import {
   ACCOUNT_TYPE_LABEL,
@@ -11,7 +9,8 @@ import {
   totalBalance,
   type AccountType,
 } from "@/lib/finance";
-import { ChevronRight, Wallet, Landmark, Smartphone, Plus } from "lucide-react";
+import { ChevronRight, Wallet, Landmark, Smartphone } from "lucide-react";
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -30,25 +29,16 @@ export const Route = createFileRoute("/")({
   }),
   component: HomePage,
 });
+
 const ICONS: Record<AccountType, typeof Wallet> = {
   cash: Wallet,
   bank: Landmark,
   ewallet: Smartphone,
 };
+
 function HomePage() {
-  const { data, ready, addAccount } = useFinance();
-  const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [type, setType] = useState<AccountType>("cash");
-  const [initial, setInitial] = useState("");
-  function submit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!name.trim()) return;
-    addAccount({ name: name.trim(), type, initialBalance: Number(initial) || 0 });
-    setName("");
-    setInitial("");
-    setOpen(false);
-  }
+  const { data, ready } = useFinance();
+
   return (
     <AppShell>
       <h1 className="sr-only">Finance tracker Duit &amp; Catatan</h1>
@@ -63,7 +53,7 @@ function HomePage() {
       </Panel>
       <Panel title="akun kamu">
         {data.accounts.length === 0 ? (
-          <EmptyNote>Belum ada akun. Tambah akun pertama kamu!</EmptyNote>
+          <EmptyNote>Belum ada akun. Pergi ke Pengaturan (ikon gir di kanan atas) untuk menambah akun pertamamu!</EmptyNote>
         ) : (
           <ul className="space-y-1">
             {data.accounts.map((a) => {
@@ -92,49 +82,6 @@ function HomePage() {
             })}
           </ul>
         )}
-        <div className="mt-4">
-          {open ? (
-            <form onSubmit={submit} className="space-y-3 border-t-2 border-dashed border-ink/20 pt-3">
-              <Field label="nama akun">
-                <TextInput
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="mis. BCA / Dompet / GoPay"
-                  required
-                />
-              </Field>
-              <Field label="tipe">
-                <SelectInput value={type} onChange={(e) => setType(e.target.value as AccountType)}>
-                  <option value="cash">Cash</option>
-                  <option value="bank">Bank</option>
-                  <option value="ewallet">E-Wallet</option>
-                </SelectInput>
-              </Field>
-              <Field label="saldo awal (Rp)">
-                <TextInput
-                  inputMode="numeric"
-                  value={initial}
-                  onChange={(e) => setInitial(e.target.value.replace(/[^0-9]/g, ""))}
-                  placeholder="0"
-                />
-              </Field>
-              <div className="flex gap-2">
-                <PrimaryButton type="submit">simpan akun</PrimaryButton>
-                <GhostButton type="button" onClick={() => setOpen(false)}>
-                  batal
-                </GhostButton>
-              </div>
-            </form>
-          ) : (
-            <GhostButton
-              type="button"
-              onClick={() => setOpen(true)}
-              className="flex w-full items-center justify-center gap-1"
-            >
-              <Plus className="size-4" /> tambah akun
-            </GhostButton>
-          )}
-        </div>
       </Panel>
     </AppShell>
   );
