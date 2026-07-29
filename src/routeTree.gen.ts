@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as StatsRouteImport } from './routes/stats'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as DebtsRouteImport } from './routes/debts'
@@ -20,6 +21,11 @@ import { Route as AccountsAccountIdRouteImport } from './routes/accounts.$accoun
 const StatsRoute = StatsRouteImport.update({
   id: '/stats',
   path: '/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/debts': typeof DebtsRoute
   '/history': typeof HistoryRoute
   '/settings': typeof SettingsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stats': typeof StatsRoute
   '/accounts/$accountId': typeof AccountsAccountIdRoute
 }
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/debts': typeof DebtsRoute
   '/history': typeof HistoryRoute
   '/settings': typeof SettingsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stats': typeof StatsRoute
   '/accounts/$accountId': typeof AccountsAccountIdRoute
 }
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/debts': typeof DebtsRoute
   '/history': typeof HistoryRoute
   '/settings': typeof SettingsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stats': typeof StatsRoute
   '/accounts/$accountId': typeof AccountsAccountIdRoute
 }
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/debts'
     | '/history'
     | '/settings'
+    | '/sitemap.xml'
     | '/stats'
     | '/accounts/$accountId'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/debts'
     | '/history'
     | '/settings'
+    | '/sitemap.xml'
     | '/stats'
     | '/accounts/$accountId'
   id:
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/debts'
     | '/history'
     | '/settings'
+    | '/sitemap.xml'
     | '/stats'
     | '/accounts/$accountId'
   fileRoutesById: FileRoutesById
@@ -117,6 +129,7 @@ export interface RootRouteChildren {
   DebtsRoute: typeof DebtsRoute
   HistoryRoute: typeof HistoryRoute
   SettingsRoute: typeof SettingsRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StatsRoute: typeof StatsRoute
   AccountsAccountIdRoute: typeof AccountsAccountIdRoute
 }
@@ -128,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/stats'
       fullPath: '/stats'
       preLoaderRoute: typeof StatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -181,9 +201,20 @@ const rootRouteChildren: RootRouteChildren = {
   DebtsRoute: DebtsRoute,
   HistoryRoute: HistoryRoute,
   SettingsRoute: SettingsRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   StatsRoute: StatsRoute,
   AccountsAccountIdRoute: AccountsAccountIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
