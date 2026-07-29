@@ -2,14 +2,14 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 export function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <label className="block">
+    <label className="flex flex-col w-full">
       <span className="hand text-lg text-ink/70">{label}</span>
       {children}
     </label>
   );
 }
 const base =
-  "mt-1 block w-full max-w-full min-w-0 rounded-md border-2 border-ink/20 bg-background px-3 py-2 text-base text-ink outline-none focus:border-primary";
+  "mt-1 block w-full min-w-0 box-border appearance-none rounded-md border-2 border-ink/20 bg-background px-3 py-2 text-base text-ink outline-none focus:border-primary";
 export function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return <input {...props} className={cn(base, props.className)} />;
 }
