@@ -24,7 +24,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Duit & Catatan — Finance Tracker Offline" },
       {
         property: "og:description",
-        content: "Finance tracker PWA yang menyimpan datanya langsung di HP kamu.",
+        content: "Catat pemasukan, pengeluaran, transfer, dan utang. Semua data tersimpan di HP kamu dan tetap jalan tanpa internet.",
       },
     ],
   }),

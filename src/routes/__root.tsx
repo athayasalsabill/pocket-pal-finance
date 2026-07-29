@@ -83,7 +83,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Finance tracker PWA: catat pemasukan, pengeluaran, transfer, dan utang. Data tersimpan di HP kamu.",
+          "Catat pemasukan, pengeluaran, transfer, dan utang. Semua data tersimpan di HP kamu dan tetap jalan tanpa internet.",
       },
       { name: "theme-color", content: "#fdf1ce" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
@@ -92,11 +92,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "Duit & Catatan — Finance Tracker Offline" },
       {
         property: "og:description",
-        content: "Catat keuangan harian kamu, offline dan tanpa server.",
+        content: "Catat pemasukan, pengeluaran, transfer, dan utang. Semua data tersimpan di HP kamu dan tetap jalan tanpa internet.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Duit & Catatan — Finance Tracker Offline" },
+      { name: "twitter:description", content: "Catat pemasukan, pengeluaran, transfer, dan utang. Semua data tersimpan di HP kamu dan tetap jalan tanpa internet." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/6b4e3627-0ff5-4b1a-88db-b00a9a184370" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/6b4e3627-0ff5-4b1a-88db-b00a9a184370" },
     ],
     links: [
       {
