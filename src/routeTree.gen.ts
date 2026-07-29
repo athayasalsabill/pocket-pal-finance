@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StatsRouteImport } from './routes/stats'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as DebtsRouteImport } from './routes/debts'
 import { Route as AddRouteImport } from './routes/add'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountsAccountIdRouteImport } from './routes/accounts.$accountId'
 
+const StatsRoute = StatsRouteImport.update({
+  id: '/stats',
+  path: '/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HistoryRoute = HistoryRouteImport.update({
   id: '/history',
   path: '/history',
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/add': typeof AddRoute
   '/debts': typeof DebtsRoute
   '/history': typeof HistoryRoute
+  '/stats': typeof StatsRoute
   '/accounts/$accountId': typeof AccountsAccountIdRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/add': typeof AddRoute
   '/debts': typeof DebtsRoute
   '/history': typeof HistoryRoute
+  '/stats': typeof StatsRoute
   '/accounts/$accountId': typeof AccountsAccountIdRoute
 }
 export interface FileRoutesById {
@@ -61,14 +69,28 @@ export interface FileRoutesById {
   '/add': typeof AddRoute
   '/debts': typeof DebtsRoute
   '/history': typeof HistoryRoute
+  '/stats': typeof StatsRoute
   '/accounts/$accountId': typeof AccountsAccountIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/add' | '/debts' | '/history' | '/accounts/$accountId'
+  fullPaths:
+    | '/'
+    | '/add'
+    | '/debts'
+    | '/history'
+    | '/stats'
+    | '/accounts/$accountId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/add' | '/debts' | '/history' | '/accounts/$accountId'
-  id: '__root__' | '/' | '/add' | '/debts' | '/history' | '/accounts/$accountId'
+  to: '/' | '/add' | '/debts' | '/history' | '/stats' | '/accounts/$accountId'
+  id:
+    | '__root__'
+    | '/'
+    | '/add'
+    | '/debts'
+    | '/history'
+    | '/stats'
+    | '/accounts/$accountId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -76,11 +98,19 @@ export interface RootRouteChildren {
   AddRoute: typeof AddRoute
   DebtsRoute: typeof DebtsRoute
   HistoryRoute: typeof HistoryRoute
+  StatsRoute: typeof StatsRoute
   AccountsAccountIdRoute: typeof AccountsAccountIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/stats': {
+      id: '/stats'
+      path: '/stats'
+      fullPath: '/stats'
+      preLoaderRoute: typeof StatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/history': {
       id: '/history'
       path: '/history'
@@ -124,6 +154,7 @@ const rootRouteChildren: RootRouteChildren = {
   AddRoute: AddRoute,
   DebtsRoute: DebtsRoute,
   HistoryRoute: HistoryRoute,
+  StatsRoute: StatsRoute,
   AccountsAccountIdRoute: AccountsAccountIdRoute,
 }
 export const routeTree = rootRouteImport
