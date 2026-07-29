@@ -6,6 +6,7 @@ import { Panel, EmptyNote } from "@/components/finance/Panel";
 import { SelectInput } from "@/components/finance/fields";
 import { useFinance } from "@/lib/finance-store";
 import { formatIDR, monthKey, monthLabel, todayISO } from "@/lib/finance";
+
 export const Route = createFileRoute("/stats")({
   head: () => ({
     meta: [
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/stats")({
   }),
   component: StatsPage,
 });
+
 const COLORS = [
   "var(--chart-1)",
   "var(--chart-2)",
@@ -29,6 +31,7 @@ const COLORS = [
   "var(--chart-5)",
   "var(--chart-6)",
 ];
+
 function StatsPage() {
   const { data } = useFinance();
   const months = useMemo(() => {
@@ -36,14 +39,17 @@ function StatsPage() {
     set.add(monthKey(todayISO()));
     return [...set].sort((a, b) => b.localeCompare(a));
   }, [data.transactions]);
+  
   const [month, setMonth] = useState(months[0]);
   const active = months.includes(month) ? month : months[0];
+  
   const txs = data.transactions.filter((t) => monthKey(t.date) === active);
   const income = sum(txs.filter((t) => t.type === "income"));
   const expense = sum(txs.filter((t) => t.type === "expense"));
   const debtPaidTotal = sum(txs.filter((t) => t.type === "debt_payment"));
   const byCategory = group(txs.filter((t) => t.type === "expense"), (t) => t.category ?? "Lainnya");
   const bySource = group(txs.filter((t) => t.type === "income"), (t) => t.source ?? "Lainnya");
+  
   const debtStatus = useMemo(() => {
     const paid = data.transactions
       .filter((t) => t.type === "debt_payment")
@@ -55,6 +61,7 @@ function StatsPage() {
       { name: "Sisa", value: remaining },
     ].filter((d) => d.value > 0);
   }, [data]);
+
   return (
     <AppShell>
       <Panel className="mb-4">
@@ -77,6 +84,7 @@ function StatsPage() {
     </AppShell>
   );
 }
+
 function Stat({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-md border-2 border-ink/15 bg-background px-1 py-2">
@@ -85,9 +93,19 @@ function Stat({ label, value }: { label: string; value: number }) {
     </div>
   );
 }
+
 function ChartPanel({ title, data }: { title: string; data: { name: string; value: number }[] }) {
+  // --- FITUR BARU: Menghitung Total ---
+  const totalValue = data.reduce((sum, item) => sum + item.value, 0);
+
   return (
     <Panel title={title} className="mb-4">
+      {/* Menampilkan Total di atas Chart */}
+      <div className="mb-3 flex items-end justify-between border-b-2 border-ink/10 pb-1 px-1">
+        <span className="hand text-lg text-ink/70">Total</span>
+        <span className="text-base font-bold text-ink">{formatIDR(totalValue)}</span>
+      </div>
+
       {data.length === 0 ? (
         <EmptyNote>Belum ada data.</EmptyNote>
       ) : (
@@ -108,9 +126,11 @@ function ChartPanel({ title, data }: { title: string; data: { name: string; valu
     </Panel>
   );
 }
+
 function sum(items: { amount: number }[]) {
   return items.reduce((s, t) => s + t.amount, 0);
 }
+
 function group<T extends { amount: number }>(items: T[], key: (t: T) => string) {
   const map = new Map<string, number>();
   items.forEach((t) => map.set(key(t), (map.get(key(t)) ?? 0) + t.amount));
