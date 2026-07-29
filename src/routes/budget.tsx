@@ -113,8 +113,52 @@ function BudgetPage() {
           </div>
         </div>
 
-        {/* --- FORM TAMBAH KEBUTUHAN --- */}
-        <form onSubmit={addNeed} className="space-y-3 mb-6 p-3 bg-card border-2 border-ink/20 rounded-md">
+        {/* --- DAFTAR KEBUTUHAN PER KATEGORI (PINDAH KE ATAS) --- */}
+        <div className="mb-6">
+          <h3 className="hand text-lg text-ink/80 mb-2">Daftar Kebutuhan</h3>
+          {grouped.length === 0 ? (
+             <EmptyNote>Belum ada daftar kebutuhan. Tambahkan di bawah!</EmptyNote>
+          ) : (
+            <div className="space-y-4">
+              {grouped.map(([category, items]) => {
+                const catTotal = items.reduce((sum, item) => sum + (item.price / item.duration), 0);
+                
+                return (
+                  <div key={category} className="border-2 border-ink/20 rounded-md overflow-hidden bg-background">
+                    
+                    {/* Header Kategori */}
+                    <div className="bg-primary/20 px-3 py-2 flex justify-between items-center border-b-2 border-ink/20">
+                      <span className="font-bold text-sm text-ink">{category}</span>
+                      <span className="font-bold text-sm text-ink">{formatIDR(catTotal)}/bln</span>
+                    </div>
+                    
+                    {/* Item di dalam Kategori */}
+                    <div className="p-2 space-y-2">
+                      {items.map(item => (
+                        <div key={item.id} className="flex justify-between items-center text-sm border-b border-ink/10 pb-2 last:border-0 last:pb-0">
+                          <div className="flex-1">
+                            <p className="font-bold text-ink">{item.name}</p>
+                            <p className="text-xs text-ink/60">{formatIDR(item.price)} untuk {item.duration} bln</p>
+                          </div>
+                          <div className="text-right flex items-center gap-3">
+                            <span className="font-bold text-ink">{formatIDR(item.price / item.duration)}</span>
+                            <button onClick={() => removeNeed(item.id)} className="text-red-600 font-bold px-1 text-lg" title="Hapus">
+                              ×
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* --- FORM TAMBAH KEBUTUHAN (PINDAH KE BAWAH) --- */}
+        <form onSubmit={addNeed} className="space-y-3 p-3 bg-card border-2 border-ink/20 rounded-md">
           <h3 className="hand text-lg text-ink/80">Tambah List Kebutuhan</h3>
           
           <Field label="Kategori">
@@ -143,46 +187,6 @@ function BudgetPage() {
           <PrimaryButton type="submit">Tambah Kebutuhan</PrimaryButton>
         </form>
 
-        {/* --- DAFTAR KEBUTUHAN PER KATEGORI --- */}
-        {grouped.length === 0 ? (
-           <EmptyNote>Belum ada daftar kebutuhan. Tambahkan di atas!</EmptyNote>
-        ) : (
-          <div className="space-y-4">
-            {grouped.map(([category, items]) => {
-              const catTotal = items.reduce((sum, item) => sum + (item.price / item.duration), 0);
-              
-              return (
-                <div key={category} className="border-2 border-ink/20 rounded-md overflow-hidden bg-background">
-                  
-                  {/* Header Kategori */}
-                  <div className="bg-primary/20 px-3 py-2 flex justify-between items-center border-b-2 border-ink/20">
-                    <span className="font-bold text-sm text-ink">{category}</span>
-                    <span className="font-bold text-sm text-ink">{formatIDR(catTotal)}/bln</span>
-                  </div>
-                  
-                  {/* Item di dalam Kategori */}
-                  <div className="p-2 space-y-2">
-                    {items.map(item => (
-                      <div key={item.id} className="flex justify-between items-center text-sm border-b border-ink/10 pb-2 last:border-0 last:pb-0">
-                        <div className="flex-1">
-                          <p className="font-bold text-ink">{item.name}</p>
-                          <p className="text-xs text-ink/60">{formatIDR(item.price)} untuk {item.duration} bln</p>
-                        </div>
-                        <div className="text-right flex items-center gap-3">
-                          <span className="font-bold text-ink">{formatIDR(item.price / item.duration)}</span>
-                          <button onClick={() => removeNeed(item.id)} className="text-red-600 font-bold px-1 text-lg" title="Hapus">
-                            ×
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                </div>
-              );
-            })}
-          </div>
-        )}
       </Panel>
     </AppShell>
   );
