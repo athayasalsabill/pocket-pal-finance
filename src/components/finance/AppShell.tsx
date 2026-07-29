@@ -16,7 +16,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-20">
         <div className="flex items-center justify-between bg-card px-4 py-3">
           <Link to="/" className="hand text-2xl font-bold text-primary">
-            duit &amp; catatan
+            Athaya's Finance Tracker
           </Link>
           <Link
             to="/settings"
