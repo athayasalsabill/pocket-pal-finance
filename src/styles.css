@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-hand: "Caveat", "Comic Sans MS", cursive;
+  --font-hand: "Reenie Beanie", "Comic Sans MS", cursive;
   --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
 }
 
