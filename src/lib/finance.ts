@@ -40,14 +40,22 @@ export interface FinanceData {
 }
 export const STORAGE_KEY = "finance-tracker-data-v1";
 export const EXPENSE_CATEGORIES = [
-  "Makan & Minum",
-  "Transport",
-  "Belanja",
-  "Tagihan",
-  "Kesehatan",
-  "Hiburan",
-  "Pendidikan",
-  "Lainnya",
+  "Food",
+  "Skincare",
+  "Internet",
+  "Cleaning Stuff",
+  "Laundry",
+  "Home Needs",
+  "Transportation",
+  "Shopping",
+  "Education",
+  "Health",
+  "Entertaiment",
+  "Gift",
+  "Tip",
+  "Admin",
+  "My Lover",
+  "Family"
 ];
 export const INCOME_SOURCES = [
   "Gaji",
