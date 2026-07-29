@@ -18,7 +18,6 @@ function ImportExcelPage() {
   function processExcel() {
     if (!text.trim()) return;
     
-    // Pisahkan berdasarkan baris baru
     const lines = text.split(/\r?\n/);
     const newAccounts = new Map();
     const accounts: any[] = [];
@@ -45,34 +44,34 @@ function ImportExcelPage() {
     lines.forEach((line) => {
       const cols = line.split('\t');
       
-      // Jika kolom kurang dari 4, abaikan (bukan baris transaksi yang valid)
       if (cols.length < 4) return; 
-      
-      // Abaikan baris header (judul tabel)
       if (cols[0]?.toLowerCase().includes("timestamp")) return;
       
-      const dateVal = cols[1]?.trim();
-      if (!dateVal) return; 
+      // 1. BERSIHKAN TANGGAL
+      let dateVal = cols[1]?.trim().split(' ')[0] || ""; 
+      if (!dateVal || dateVal.toLowerCase() === 'date') return;
       
-      // Standarisasi format tanggal
-      let dateStr = dateVal.split(' ')[0];
-      if (dateStr.includes('/')) {
-        const parts = dateStr.split('/');
-        if (parts[2]?.length === 4) { // Jika DD/MM/YYYY -> jadikan YYYY-MM-DD
+      let dateStr = dateVal.replace(/\//g, '-');
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        if (parts[2].length === 4) { // Jika DD-MM-YYYY
           dateStr = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+        } else if (parts[0].length === 4) { // Jika YYYY-MM-DD
+          dateStr = `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
         }
       }
       
-      // Ambil nilai uang, pastikan formatnya jadi angka yang bersih
-      const amount = Number(cols[2]?.replace(/[^0-9.-]+/g,"")) || 0;
+      // 2. BERSIHKAN ANGKA (Hapus Rp, spasi, dan titik pemisah ribuan)
+      let rawAmount = cols[2] || "0";
+      rawAmount = rawAmount.replace(/rp/ig, '').replace(/\s/g, '').replace(/\./g, '');
+      rawAmount = rawAmount.replace(/,/g, '.'); // koma desimal jadi titik
+      const amount = Number(rawAmount) || 0;
+      
       if (amount <= 0) return;
       
       const transType = (cols[3] || "").trim().toLowerCase();
-      
-      // Mencegah error jika kolom catatan (kolom ke-13) tidak ada karena kosong di Excel
       const note = cols.length > 12 ? (cols[12] || "").trim() : "";
       
-      // Logika Expense & Debt
       if (transType === 'expense' || transType === 'debt') {
          const accName = cols[6]?.trim() || cols[8]?.trim() || "";
          const catName = cols[7]?.trim() || cols[9]?.trim() || "";
@@ -99,7 +98,6 @@ function ImportExcelPage() {
              });
          }
       } 
-      // Logika Income
       else if (transType === 'income') {
          const accName = (cols[4] || "").trim();
          const source = (cols[5] || "").trim();
@@ -125,7 +123,6 @@ function ImportExcelPage() {
              });
          }
       } 
-      // Logika Transfer
       else if (transType === 'transfer') {
          const fromAcc = (cols[10] || "").trim();
          const toAcc = (cols[11] || "").trim();
@@ -153,13 +150,13 @@ function ImportExcelPage() {
     <AppShell>
       <Panel title="Import Excel">
         <p className="text-sm text-ink/70 mb-4">
-          Buka sheet <strong>"Form Responses 1"</strong> di Excel, blok semua baris dan kolom datanya, lalu Copy (Ctrl+C) dan Paste (Ctrl+V) di kotak bawah ini.
+          Buka sheet <strong>"Form Responses 1"</strong> di Excel, blok semua data dari kiri atas sampai kanan bawah, lalu Copy & Paste ke sini.
         </p>
         <textarea
           value={text}
           onChange={e => setText(e.target.value)}
           className="w-full h-48 p-2 border-2 border-ink/20 rounded-md mb-4 text-xs font-mono bg-background text-ink outline-none focus:border-primary"
-          placeholder="Paste data dari Excel di sini..."
+          placeholder="Paste data Excel di sini..."
         />
         <PrimaryButton onClick={processExcel}>
           Proses & Simpan ke Aplikasi
