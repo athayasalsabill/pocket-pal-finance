@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { AppShell } from "@/components/finance/AppShell";
 import { Panel, EmptyNote } from "@/components/finance/Panel";
 import { TxRow } from "@/components/finance/TxRow";
@@ -6,6 +7,7 @@ import { GhostButton } from "@/components/finance/fields";
 import { useFinance } from "@/lib/finance-store";
 import { ACCOUNT_TYPE_LABEL, accountBalance, accountTransactions, formatIDR } from "@/lib/finance";
 import { ArrowLeft } from "lucide-react";
+
 export const Route = createFileRoute("/accounts/$accountId")({
   head: () => ({
     meta: [
@@ -20,10 +22,26 @@ export const Route = createFileRoute("/accounts/$accountId")({
   }),
   component: AccountPage,
 });
+
 function AccountPage() {
   const { accountId } = Route.useParams();
   const { data, deleteAccount, deleteTransaction } = useFinance();
+  
   const account = data.accounts.find((a) => a.id === accountId);
+  
+  // 1. SISTEM ANTI-CRASH: Membuat salinan data yang aman dan menambal data kosong
+  const safeData = useMemo(() => {
+    return {
+      ...data,
+      accounts: [
+        ...(data.accounts || []),
+        { id: "", name: "Akun Tidak Diketahui", type: "cash" as const, initialBalance: 0 }
+      ],
+      // Filter transaksi yang null/undefined agar fungsi accountTransactions tidak crash
+      transactions: (data.transactions || []).filter(tx => tx)
+    };
+  }, [data]);
+
   if (!account) {
     return (
       <AppShell>
@@ -36,7 +54,10 @@ function AccountPage() {
       </AppShell>
     );
   }
-  const txs = accountTransactions(account.id, data);
+  
+  // Menggunakan safeData alih-alih data asli
+  const txs = accountTransactions(account.id, safeData);
+  
   return (
     <AppShell>
       <Link to="/" className="hand mb-2 inline-flex items-center gap-1 text-lg text-ink/70">
@@ -46,14 +67,24 @@ function AccountPage() {
         <p className="hand text-2xl text-ink">{account.name}</p>
         <p className="text-xs text-muted-foreground">{ACCOUNT_TYPE_LABEL[account.type]}</p>
         <p className="mt-2 text-3xl font-extrabold text-primary">
-          {formatIDR(accountBalance(account, data))}
+          {formatIDR(accountBalance(account, safeData))}
         </p>
       </Panel>
       <Panel title="riwayat akun ini">
         {txs.length === 0 ? (
           <EmptyNote>Belum ada transaksi di akun ini.</EmptyNote>
         ) : (
-          txs.map((tx) => <TxRow key={tx.id} tx={tx} data={data} onDelete={deleteTransaction} />)
+          txs.map((tx) => {
+            // 2. PENAMBALAN DATA: Memberikan nilai default jika ada kolom yang kosong
+            const patchedTx = {
+              ...tx,
+              date: tx.date || "2000-01-01",
+              category: tx.category || "Lainnya",
+              source: tx.source || "Lainnya",
+            };
+            
+            return <TxRow key={tx.id} tx={patchedTx} data={safeData} onDelete={deleteTransaction} />
+          })
         )}
         <GhostButton
           type="button"
