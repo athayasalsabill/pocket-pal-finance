@@ -9,7 +9,7 @@ export const Route = createFileRoute("/import-excel")({
   component: ImportCSVPage,
 });
 
-// Fungsi pembaca CSV (tahan banting terhadap koma dan enter di dalam catatan)
+// Fungsi pembaca CSV
 function parseCSV(str: string) {
     const result: string[][] = [];
     let row: string[] = [];
@@ -35,7 +35,7 @@ function parseCSV(str: string) {
                 row.push(val);
                 val = '';
             } else if (char === '\n' || char === '\r') {
-                if (char === '\r' && str[i + 1] === '\n') i++; // lewati \n
+                if (char === '\r' && str[i + 1] === '\n') i++;
                 row.push(val);
                 result.push(row);
                 row = [];
@@ -69,7 +69,6 @@ function ImportCSVPage() {
         const newAccounts = new Map();
         const accounts: any[] = [];
         const transactions: any[] = [];
-        const debts: any[] = [];
 
         function getAccountId(name: string) {
           if (!name) return "";
@@ -89,25 +88,21 @@ function ImportCSVPage() {
         }
 
         lines.forEach((cols, index) => {
-          // Baris pertama (index 0) adalah header, kita lewati. 
-          // Jika kolom kurang dari 4, berarti baris kosong/rusak, lewati.
           if (index === 0 || cols.length < 4) return;
           
           let dateVal = (cols[1] || "").trim().split(' ')[0]; 
           if (!dateVal || dateVal.toLowerCase() === 'date') return;
           
-          // Standarisasi format tanggal ke YYYY-MM-DD
           let dateStr = dateVal.replace(/\//g, '-');
           const parts = dateStr.split('-');
           if (parts.length === 3) {
-            if (parts[2].length === 4) { // Jika format DD-MM-YYYY
+            if (parts[2].length === 4) { 
               dateStr = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
-            } else if (parts[0].length === 4) { // Jika format YYYY-MM-DD
+            } else if (parts[0].length === 4) { 
               dateStr = `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
             }
           }
           
-          // Bersihkan angka (hapus Rp, hapus titik pemisah ribuan)
           let rawAmount = cols[2] || "0";
           rawAmount = rawAmount.replace(/rp/ig, '').replace(/\s/g, '').replace(/\./g, '');
           rawAmount = rawAmount.replace(/,/g, '.');
@@ -118,57 +113,37 @@ function ImportCSVPage() {
           const transType = (cols[3] || "").trim().toLowerCase();
           const note = cols.length > 12 ? (cols[12] || "").trim() : "";
           
+          // Logika Expense murni
           if (transType === 'expense' || transType === 'debt') {
              const accName = cols[6]?.trim() || cols[8]?.trim() || "";
              const catName = cols[7]?.trim() || cols[9]?.trim() || "";
              
-             if (catName.toLowerCase() === 'nalangin') {
-                 debts.push({
-                     id: crypto.randomUUID(),
-                     direction: "owed",
-                     person: note || "Seseorang",
-                     amount,
-                     date: dateStr,
-                     note,
-                     accountId: getAccountId(accName)
-                 });
-             } else {
-                 transactions.push({
-                     id: crypto.randomUUID(),
-                     type: "expense",
-                     amount,
-                     date: dateStr,
-                     note,
-                     accountId: getAccountId(accName),
-                     category: catName
-                 });
-             }
+             transactions.push({
+                 id: crypto.randomUUID(),
+                 type: "expense",
+                 amount,
+                 date: dateStr,
+                 note,
+                 accountId: getAccountId(accName),
+                 category: catName
+             });
           } 
+          // Logika Income murni
           else if (transType === 'income') {
              const accName = (cols[4] || "").trim();
              const source = (cols[5] || "").trim();
              
-             if (source.toLowerCase() === 'payback' || note.toLowerCase().includes('payback')) {
-                 transactions.push({
-                     id: crypto.randomUUID(),
-                     type: "debt_payment",
-                     amount,
-                     date: dateStr,
-                     note,
-                     accountId: getAccountId(accName)
-                 });
-             } else {
-                 transactions.push({
-                     id: crypto.randomUUID(),
-                     type: "income",
-                     amount,
-                     date: dateStr,
-                     note,
-                     accountId: getAccountId(accName),
-                     source
-                 });
-             }
+             transactions.push({
+                 id: crypto.randomUUID(),
+                 type: "income",
+                 amount,
+                 date: dateStr,
+                 note,
+                 accountId: getAccountId(accName),
+                 source
+             });
           } 
+          // Logika Transfer
           else if (transType === 'transfer') {
              const fromAcc = (cols[10] || "").trim();
              const toAcc = (cols[11] || "").trim();
@@ -185,8 +160,9 @@ function ImportCSVPage() {
           }
         });
 
-        if (confirm(`Ditemukan ${accounts.length} akun, ${transactions.length} transaksi, dan ${debts.length} catatan piutang/utang. Simpan ke aplikasi?`)) {
-           replaceAll({ accounts, transactions, debts });
+        if (confirm(`Ditemukan ${accounts.length} akun dan ${transactions.length} transaksi. Simpan ke aplikasi?`)) {
+           // Simpan data, mengosongkan debts (piutang) karena tidak dipakai lagi
+           replaceAll({ accounts, transactions, debts: [] });
            setMsg(`Berhasil! ${transactions.length} transaksi tersimpan.`);
            setTimeout(() => navigate({ to: "/" }), 2000);
         } else {
@@ -197,7 +173,6 @@ function ImportCSVPage() {
         console.error(error);
     }
     
-    // Reset file input agar bisa klik file yang sama lagi kalau gagal
     e.target.value = "";
   }
 
