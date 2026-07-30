@@ -5,7 +5,8 @@ import { Panel, EmptyNote } from "@/components/finance/Panel";
 import { TxRow } from "@/components/finance/TxRow";
 import { GhostButton } from "@/components/finance/fields";
 import { useFinance } from "@/lib/finance-store";
-import { ACCOUNT_TYPE_LABEL, accountBalance, accountTransactions, formatIDR } from "@/lib/finance";
+// KITA HAPUS import accountBalance dan accountTransactions dari sini!
+import { ACCOUNT_TYPE_LABEL, formatIDR } from "@/lib/finance";
 import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/accounts/$accountId")({
@@ -21,44 +22,57 @@ function AccountPage() {
   
   const account = data.accounts?.find((a) => a.id === accountId);
   
-  // 1. SISTEM PERTAHANAN SUPER: Memperbaiki semua relasi dan angka cacat sebelum dihitung
-  const safeData = useMemo(() => {
-    // A. Buat jaring pengaman untuk akun
-    const safeAccounts = [
-      ...(data.accounts || []),
-      { id: "fallback-id", name: "Akun Dihapus/Tidak Diketahui", type: "cash" as const, initialBalance: 0 }
-    ];
+  // SISTEM KEBAL TOTAL: Kita hitung saldo & daftar secara manual!
+  const { safeTxs, safeBalance, safeData } = useMemo(() => {
+    const rawTxs = data.transactions || [];
     
-    const validAccountIds = new Set(safeAccounts.map(a => a.id));
+    // 1. Saring transaksi khusus untuk akun ini saja
+    const accountTxs = rawTxs.filter(
+      (tx) => tx && (tx.accountId === accountId || tx.toAccountId === accountId)
+    );
 
-    // B. Tambal SEMUA transaksi yang rusak/bolong
-    const safeTransactions = (data.transactions || [])
-      .filter(tx => !!tx) // buang data yg benar-benar null
-      .map(tx => {
-        // Jika akunnya tidak ada di database, arahkan ke akun fallback
-        const accId = validAccountIds.has(tx.accountId) ? tx.accountId : "fallback-id";
-        const toAccId = tx.toAccountId && validAccountIds.has(tx.toAccountId) ? tx.toAccountId : "fallback-id";
+    // 2. Hitung saldo secara manual & aman
+    let balance = Number(account?.initialBalance) || 0;
+    
+    const cleanedTxs = accountTxs.map(tx => {
+        // Amankan nilai uang agar tidak NaN
+        const amt = Number(tx.amount) || 0;
         
-        return {
-          ...tx,
-          id: tx.id || crypto.randomUUID(),
-          type: tx.type || "expense",
-          amount: Number(tx.amount) || 0, // Paksa jadi angka, cegah NaN
-          date: tx.date || "2000-01-01",
-          accountId: accId,
-          toAccountId: tx.type === "transfer" ? toAccId : undefined,
-          category: tx.category || "Lainnya",
-          source: tx.source || "Lainnya",
-          note: tx.note || ""
-        };
-      });
+        // Kalkulasi ke saldo
+        if (tx.type === "income" && tx.accountId === accountId) {
+            balance += amt;
+        } else if (tx.type === "expense" && tx.accountId === accountId) {
+            balance -= amt;
+        } else if (tx.type === "transfer") {
+            if (tx.accountId === accountId) balance -= amt;
+            if (tx.toAccountId === accountId) balance += amt;
+        }
 
-    return {
-      ...data,
-      accounts: safeAccounts,
-      transactions: safeTransactions
+        // Amankan bentuk transaksinya agar komponen TxRow tidak meledak
+        return {
+            ...tx,
+            id: tx.id || crypto.randomUUID(),
+            type: tx.type || "expense",
+            amount: amt,
+            date: tx.date || "2000-01-01",
+            category: tx.category || "Lainnya",
+            source: tx.source || "Lainnya",
+            note: tx.note || ""
+        };
+    });
+
+    // Urutkan transaksi dari yang paling baru
+    cleanedTxs.sort((a, b) => b.date.localeCompare(a.date));
+
+    // Siapkan safeData untuk dilempar ke TxRow (agar tidak merusak fungsi dalam)
+    const validData = { ...data, transactions: rawTxs.filter(tx => !!tx) };
+
+    return { 
+      safeTxs: cleanedTxs, 
+      safeBalance: Math.round(balance), 
+      safeData: validData 
     };
-  }, [data]);
+  }, [data, accountId, account]);
 
   if (!account) {
     return (
@@ -73,10 +87,7 @@ function AccountPage() {
     );
   }
   
-  // 2. Sekarang kita gunakan safeData untuk menghitung semuanya dengan aman
-  const txs = accountTransactions(account.id, safeData);
-  
-  // Mencegah crash jika tipe akun tidak dikenali
+  // Pengaman tipe akun (E-Wallet, Bank, dsb)
   // @ts-ignore
   const typeLabel = ACCOUNT_TYPE_LABEL[account.type] || "Dompet/Bank"; 
   
@@ -90,15 +101,15 @@ function AccountPage() {
         <p className="hand text-2xl text-ink">{account.name}</p>
         <p className="text-xs text-muted-foreground">{typeLabel}</p>
         <p className="mt-2 text-3xl font-extrabold text-primary">
-          {formatIDR(accountBalance(account, safeData) || 0)}
+          {formatIDR(safeBalance)}
         </p>
       </Panel>
       
       <Panel title="riwayat akun ini">
-        {txs.length === 0 ? (
+        {safeTxs.length === 0 ? (
           <EmptyNote>Belum ada transaksi di akun ini.</EmptyNote>
         ) : (
-          txs.map((tx) => (
+          safeTxs.map((tx) => (
             <TxRow key={tx.id} tx={tx} data={safeData} onDelete={deleteTransaction} />
           ))
         )}
