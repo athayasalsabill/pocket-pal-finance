@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Home, PlusCircle, HandCoins, History, PieChart, Settings, ClipboardList } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -15,6 +15,28 @@ const NAV = [
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  
+  // 1. SISTEM INGATAN SCROLL
+  // Menyimpan data posisi scroll berupa kamus: { "/history": 450, "/": 120 }
+  const scrollMap = useRef<Record<string, number>>({});
+
+  // 2. Merekam setiap kali kamu nge-scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      // Simpan posisi scroll saat ini ke dalam 'ingatan' khusus untuk tab yang sedang dibuka
+      scrollMap.current[pathname] = window.scrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [pathname]);
+
+  // 3. Mengembalikan posisi scroll sesaat sebelum halaman digambar di layar
+  useLayoutEffect(() => {
+    // Ambil posisi terakhir dari ingatan, jika belum pernah buka, kembali ke 0 (atas)
+    const savedPosition = scrollMap.current[pathname] || 0;
+    window.scrollTo(0, savedPosition);
+  }, [pathname]);
   
   return (
     <div className="min-h-screen stripes">
