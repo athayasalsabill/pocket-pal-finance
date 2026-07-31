@@ -6,7 +6,6 @@
 
 @theme {
   --font-hand: "Caveat", "Comic Sans MS", cursive;
-  /* Mengubah font utama menjadi Serif / Klasik */
   --font-sans: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
 }
 
@@ -37,107 +36,89 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-ring-offset-background: var(--background);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
   
   --color-olive: var(--olive);
   --color-sky: var(--sky);
   --color-ink: var(--ink);
-  --color-chart-6: var(--chart-6);
 }
 
 :root {
-  /* Sudut dibuat lebih membulat (ala coquette) */
   --radius: 1rem; 
   
-  /* PALET WARNA COQUETTE (SOFT PINK & COKLAT KALEM) */
-  --background: oklch(0.98 0.01 350);
-  --foreground: oklch(0.45 0.05 350);
-  --card: oklch(0.94 0.03 350);
-  --card-foreground: oklch(0.45 0.05 350);
-  --popover: oklch(0.94 0.03 350);
-  --popover-foreground: oklch(0.45 0.05 350);
-  --primary: oklch(0.85 0.08 350); 
-  --primary-foreground: oklch(0.45 0.05 350);
-  --secondary: oklch(0.9 0.04 350);
-  --secondary-foreground: oklch(0.45 0.05 350);
-  --muted: oklch(0.96 0.02 350);
-  --muted-foreground: oklch(0.65 0.04 350);
+  /* ====================================================
+     TEMA STRAWBERRY CHOCOLATE (Pink Muda, Putih Gading, Coklat Tua)
+     ==================================================== */
+  
+  /* Background Utama: Pink Muda (Soft Pink) */
+  --background: oklch(0.95 0.03 350);
+  
+  /* Teks Utama: Dark Brown (Coklat Tua pekat agar jelas) */
+  --foreground: oklch(0.35 0.04 45);
+  
+  /* Kotak/Card: Putih Gading (Ivory White) */
+  --card: oklch(0.98 0.01 90);
+  --card-foreground: oklch(0.35 0.04 45);
+  
+  --popover: oklch(0.98 0.01 90);
+  --popover-foreground: oklch(0.35 0.04 45);
+  
+  /* Aksen (Tombol): Pink yang sedikit lebih matang */
+  --primary: oklch(0.88 0.06 350); 
+  /* Teks di atas tombol: Dark Brown */
+  --primary-foreground: oklch(0.35 0.04 45);
+  
+  /* Warna sekunder & pinggiran */
+  --secondary: oklch(0.94 0.02 70); /* Cream agak gelap */
+  --secondary-foreground: oklch(0.35 0.04 45);
+  --muted: oklch(0.94 0.02 70);
+  --muted-foreground: oklch(0.55 0.05 45); /* Coklat muda untuk teks tambahan */
+  
   --accent: oklch(0.9 0.04 350);
-  --accent-foreground: oklch(0.45 0.05 350);
+  --accent-foreground: oklch(0.35 0.04 45);
+  
   --destructive: oklch(0.6 0.15 10);
-  --destructive-foreground: oklch(0.98 0.01 350);
-  --border: oklch(0.88 0.04 350);
-  --input: oklch(0.88 0.04 350);
-  --ring: oklch(0.85 0.08 350);
+  --destructive-foreground: oklch(0.98 0.01 90);
   
+  --border: oklch(0.88 0.03 45);
+  --input: oklch(0.88 0.03 45);
+  --ring: oklch(0.85 0.06 350);
+  
+  /* Ink selalu Dark Brown */
+  --ink: oklch(0.35 0.04 45);
   --olive: oklch(0.9 0.04 350);
-  --sky: oklch(0.92 0.05 350); 
-  --ink: oklch(0.45 0.05 350);
+  --sky: oklch(0.96 0.02 350); 
   
+  /* Warna Chart disesuaikan dengan tone pink & coklat */
   --chart-1: oklch(0.85 0.08 350);
-  --chart-2: oklch(0.9 0.04 350);
-  --chart-3: oklch(0.92 0.05 350);
-  --chart-4: oklch(0.94 0.03 350);
-  --chart-5: oklch(0.96 0.02 350);
-  --chart-6: oklch(0.88 0.04 350);
-  
-  --sidebar: oklch(0.98 0.01 350);
-  --sidebar-foreground: oklch(0.45 0.05 350);
-  --sidebar-primary: oklch(0.85 0.08 350);
-  --sidebar-primary-foreground: oklch(0.45 0.05 350);
-  --sidebar-accent: oklch(0.94 0.03 350);
-  --sidebar-accent-foreground: oklch(0.45 0.05 350);
-  --sidebar-border: oklch(0.88 0.04 350);
-  --sidebar-ring: oklch(0.85 0.08 350);
+  --chart-2: oklch(0.7 0.08 45);
+  --chart-3: oklch(0.9 0.04 350);
 }
 
 .dark {
-  /* Dark mode dengan nuansa maroon gelap */
-  --background: oklch(0.25 0.05 350);
-  --foreground: oklch(0.95 0.02 350);
-  --card: oklch(0.3 0.06 350);
-  --card-foreground: oklch(0.95 0.02 350);
-  --popover: oklch(0.3 0.06 350);
-  --popover-foreground: oklch(0.95 0.02 350);
-  --primary: oklch(0.4 0.08 350);
-  --primary-foreground: oklch(0.95 0.02 350);
-  --secondary: oklch(0.35 0.07 350);
-  --secondary-foreground: oklch(0.95 0.02 350);
-  --muted: oklch(0.35 0.07 350);
-  --muted-foreground: oklch(0.7 0.04 350);
-  --accent: oklch(0.35 0.07 350);
-  --accent-foreground: oklch(0.95 0.02 350);
+  /* Dark Mode: Coklat Tua pekat (seperti dark chocolate) */
+  --background: oklch(0.25 0.03 45);
+  --foreground: oklch(0.95 0.03 350);
+  --card: oklch(0.32 0.03 45);
+  --card-foreground: oklch(0.98 0.01 90);
+  --popover: oklch(0.32 0.03 45);
+  --popover-foreground: oklch(0.98 0.01 90);
+  --primary: oklch(0.85 0.06 350);
+  --primary-foreground: oklch(0.25 0.03 45);
+  --secondary: oklch(0.38 0.03 45);
+  --secondary-foreground: oklch(0.98 0.01 90);
+  --muted: oklch(0.38 0.03 45);
+  --muted-foreground: oklch(0.8 0.03 45);
+  --accent: oklch(0.38 0.03 45);
+  --accent-foreground: oklch(0.98 0.01 90);
   --destructive: oklch(0.5 0.15 10);
-  --destructive-foreground: oklch(0.95 0.02 350);
+  --destructive-foreground: oklch(0.95 0.03 350);
   --border: oklch(1 0 0 / 15%);
   --input: oklch(1 0 0 / 20%);
-  --ring: oklch(0.4 0.08 350);
-  --chart-1: oklch(0.4 0.08 350);
-  --chart-2: oklch(0.45 0.09 350);
-  --chart-3: oklch(0.5 0.1 350);
-  --chart-4: oklch(0.55 0.11 350);
-  --chart-5: oklch(0.6 0.12 350);
-  --sidebar: oklch(0.25 0.05 350);
-  --sidebar-foreground: oklch(0.95 0.02 350);
-  --sidebar-primary: oklch(0.4 0.08 350);
-  --sidebar-primary-foreground: oklch(0.95 0.02 350);
-  --sidebar-accent: oklch(0.3 0.06 350);
-  --sidebar-accent-foreground: oklch(0.95 0.02 350);
-  --sidebar-border: oklch(1 0 0 / 15%);
-  --sidebar-ring: oklch(0.4 0.08 350);
+  --ring: oklch(0.85 0.06 350);
+  --ink: oklch(0.98 0.01 90);
 }
 
 @layer base {
@@ -146,61 +127,61 @@
   }
 
   body {
+    /* Set Background Pink Muda */
     background-color: var(--color-background);
+    
+    /* SET POLA BACKGROUND TITIK KECIL DARK BROWN */
+    background-image: radial-gradient(circle, var(--color-ink) 1.5px, transparent 1.5px);
+    background-size: 18px 18px;
+    
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-tap-highlight-color: transparent;
     
-    /* Efek Tekstur Kain / Vintage Paper (Dipertahankan) */
+    /* Efek Tekstur Kain / Vintage Paper */
     &::after {
       content: "";
       position: fixed;
       inset: 0;
       pointer-events: none;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-      opacity: 0.2; 
+      opacity: 0.15; 
       z-index: 9999;
       mix-blend-mode: multiply;
     }
   }
 
-  /* Gaya Tombol ala Coquette (Bulat & Huruf Kapital) */
+  /* Gaya Tombol (Bulat & Coklat Tua/Pink) */
   button, .btn {
     border-radius: 9999px !important;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    font-weight: 700;
   }
 }
 
 /* =======================================================
-   UTILITIES POLA (PATTERN) SEPERTI GAMBAR
+   UTILITIES TAMBAHAN
    ======================================================= */
 
-/* Pola Grid / Kotak-kotak */
+/* Pola Grid / Kotak-kotak (jika ingin dipakai di komponen tertentu) */
 @utility pattern-grid {
   background-color: var(--color-card);
   background-image:
-    linear-gradient(to right, oklch(1 0 0 / 70%) 2px, transparent 2px),
-    linear-gradient(to bottom, oklch(1 0 0 / 70%) 2px, transparent 2px);
+    linear-gradient(to right, oklch(0.88 0.06 350 / 30%) 2px, transparent 2px),
+    linear-gradient(to bottom, oklch(0.88 0.06 350 / 30%) 2px, transparent 2px);
   background-size: 24px 24px;
 }
 
-/* Pola Polkadot / Titik */
-@utility pattern-dots {
-  background-color: var(--color-card);
-  background-image: radial-gradient(var(--color-primary) 2px, transparent 2px);
-  background-size: 20px 20px;
-}
-
-/* Menimpa stripes lama menjadi pola garis vertikal ala buku tulis vintage */
+/* Pola Garis Vertikal (Buku Tulis) */
 @utility stripes {
   background-color: var(--color-card);
   background-image: repeating-linear-gradient(
     90deg,
-    oklch(1 0 0 / 70%) 0px,
-    oklch(1 0 0 / 70%) 3px,
-    transparent 3px,
-    transparent 14px
+    oklch(0.88 0.06 350 / 40%) 0px,
+    oklch(0.88 0.06 350 / 40%) 2px,
+    transparent 2px,
+    transparent 16px
   );
 }
 
@@ -210,7 +191,7 @@
     var(--color-primary) 0, 
     var(--color-primary) 2px, 
     transparent 2px, 
-    transparent 4px
+    transparent 6px
   );
 }
 
