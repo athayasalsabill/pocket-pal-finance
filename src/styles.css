@@ -131,8 +131,16 @@
     background-color: var(--color-background);
     
     /* SET POLA BACKGROUND TITIK KECIL DARK BROWN */
-    background-image: radial-gradient(circle, var(--color-ink) 1.5px, transparent 1.5px);
-    background-size: 18px 18px;
+    background-image: 
+      radial-gradient(circle, var(--color-ink) 1.5px, transparent 1.5px),
+      radial-gradient(circle, var(--color-ink) 1px, transparent 1px),
+      radial-gradient(circle, var(--color-ink) 1.2px, transparent 1.2px),
+      radial-gradient(circle, var(--color-ink) 1px, transparent 1px);
+    background-size: 
+      37px 37px, 
+      29px 29px, 
+      43px 43px, 
+      53px 53px;
     
     color: var(--color-foreground);
     font-family: var(--font-sans);
