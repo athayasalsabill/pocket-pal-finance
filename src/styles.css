@@ -162,7 +162,7 @@
   /* Gaya Tombol (Bulat & Coklat Tua/Pink) */
   button, .btn {
     border-radius: 9999px !important;
-    text-transform: uppercase;
+    text-transform: lowercase;
     letter-spacing: 0.05em;
     font-weight: 700;
   }
