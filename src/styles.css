@@ -176,10 +176,10 @@
 @utility stripes {
   background-image: repeating-linear-gradient(
     90deg,
-    var(--olive) 0px,
-    var(--olive) 34px,
+    var(--sky) 0px,
     var(--sky) 34px,
-    var(--sky) 48px
+    var(--muted) 34px,
+    var(--muted) 48px
   );
 }
 
