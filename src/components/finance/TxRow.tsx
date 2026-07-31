@@ -41,7 +41,7 @@ export function TxRow({
       {/* Bagian kiri yang sekarang bisa diklik */}
       <div 
         className="min-w-0 flex-1 cursor-pointer hover:opacity-60 transition-opacity"
-        onClick={() => navigate({ to: `/edit/${safeTx.id}` as any })}
+        onClick={() => navigate({ to: `/transaction/${safeTx.id}` as any })}
       >
         <p className="truncate text-sm font-semibold text-ink">{label}</p>
         <p className="truncate text-xs text-muted-foreground">
