@@ -6,22 +6,9 @@
 
 @theme {
   --font-hand: "Caveat", "Comic Sans MS", cursive;
-  --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
+  /* Mengubah font utama menjadi Serif / Klasik */
+  --font-sans: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
 }
-
-/*
- * Design system definition.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
- */
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -64,88 +51,93 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-}
-
-:root {
-  --radius: 0.5rem;
-  --background: oklch(0.955 0.055 92);
-  --foreground: oklch(0.28 0.035 70);
-  --card: oklch(0.972 0.042 94);
-  --card-foreground: oklch(0.28 0.035 70);
-  --popover: oklch(0.972 0.042 94);
-  --popover-foreground: oklch(0.28 0.035 70);
-  --primary: oklch(0.52 0.185 30);
-  --primary-foreground: oklch(0.972 0.042 94);
-  --secondary: oklch(0.72 0.055 100);
-  --secondary-foreground: oklch(0.25 0.03 70);
-  --muted: oklch(0.92 0.035 95);
-  --muted-foreground: oklch(0.5 0.03 75);
-  --accent: oklch(0.88 0.045 220);
-  --accent-foreground: oklch(0.28 0.035 70);
-  --destructive: oklch(0.52 0.185 30);
-  --destructive-foreground: oklch(0.972 0.042 94);
-  --border: oklch(0.82 0.045 90);
-  --input: oklch(0.82 0.045 90);
-  --ring: oklch(0.52 0.185 30);
-  --olive: oklch(0.68 0.055 100);
-  --sky: oklch(0.87 0.045 220);
-  --ink: oklch(0.28 0.035 70);
-  --chart-1: oklch(0.52 0.185 30);
-  --chart-2: oklch(0.68 0.055 100);
-  --chart-3: oklch(0.72 0.09 220);
-  --chart-4: oklch(0.78 0.12 70);
-  --chart-5: oklch(0.6 0.09 150);
-  --chart-6: oklch(0.45 0.08 300);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
-}
-
-@theme inline {
+  
   --color-olive: var(--olive);
   --color-sky: var(--sky);
   --color-ink: var(--ink);
   --color-chart-6: var(--chart-6);
 }
 
+:root {
+  /* Sudut dibuat lebih membulat (ala coquette) */
+  --radius: 1rem; 
+  
+  /* PALET WARNA COQUETTE (SOFT PINK & COKLAT KALEM) */
+  --background: oklch(0.98 0.01 350);
+  --foreground: oklch(0.45 0.05 350);
+  --card: oklch(0.94 0.03 350);
+  --card-foreground: oklch(0.45 0.05 350);
+  --popover: oklch(0.94 0.03 350);
+  --popover-foreground: oklch(0.45 0.05 350);
+  --primary: oklch(0.85 0.08 350); 
+  --primary-foreground: oklch(0.45 0.05 350);
+  --secondary: oklch(0.9 0.04 350);
+  --secondary-foreground: oklch(0.45 0.05 350);
+  --muted: oklch(0.96 0.02 350);
+  --muted-foreground: oklch(0.65 0.04 350);
+  --accent: oklch(0.9 0.04 350);
+  --accent-foreground: oklch(0.45 0.05 350);
+  --destructive: oklch(0.6 0.15 10);
+  --destructive-foreground: oklch(0.98 0.01 350);
+  --border: oklch(0.88 0.04 350);
+  --input: oklch(0.88 0.04 350);
+  --ring: oklch(0.85 0.08 350);
+  
+  --olive: oklch(0.9 0.04 350);
+  --sky: oklch(0.92 0.05 350); 
+  --ink: oklch(0.45 0.05 350);
+  
+  --chart-1: oklch(0.85 0.08 350);
+  --chart-2: oklch(0.9 0.04 350);
+  --chart-3: oklch(0.92 0.05 350);
+  --chart-4: oklch(0.94 0.03 350);
+  --chart-5: oklch(0.96 0.02 350);
+  --chart-6: oklch(0.88 0.04 350);
+  
+  --sidebar: oklch(0.98 0.01 350);
+  --sidebar-foreground: oklch(0.45 0.05 350);
+  --sidebar-primary: oklch(0.85 0.08 350);
+  --sidebar-primary-foreground: oklch(0.45 0.05 350);
+  --sidebar-accent: oklch(0.94 0.03 350);
+  --sidebar-accent-foreground: oklch(0.45 0.05 350);
+  --sidebar-border: oklch(0.88 0.04 350);
+  --sidebar-ring: oklch(0.85 0.08 350);
+}
+
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  /* Dark mode dengan nuansa maroon gelap */
+  --background: oklch(0.25 0.05 350);
+  --foreground: oklch(0.95 0.02 350);
+  --card: oklch(0.3 0.06 350);
+  --card-foreground: oklch(0.95 0.02 350);
+  --popover: oklch(0.3 0.06 350);
+  --popover-foreground: oklch(0.95 0.02 350);
+  --primary: oklch(0.4 0.08 350);
+  --primary-foreground: oklch(0.95 0.02 350);
+  --secondary: oklch(0.35 0.07 350);
+  --secondary-foreground: oklch(0.95 0.02 350);
+  --muted: oklch(0.35 0.07 350);
+  --muted-foreground: oklch(0.7 0.04 350);
+  --accent: oklch(0.35 0.07 350);
+  --accent-foreground: oklch(0.95 0.02 350);
+  --destructive: oklch(0.5 0.15 10);
+  --destructive-foreground: oklch(0.95 0.02 350);
+  --border: oklch(1 0 0 / 15%);
+  --input: oklch(1 0 0 / 20%);
+  --ring: oklch(0.4 0.08 350);
+  --chart-1: oklch(0.4 0.08 350);
+  --chart-2: oklch(0.45 0.09 350);
+  --chart-3: oklch(0.5 0.1 350);
+  --chart-4: oklch(0.55 0.11 350);
+  --chart-5: oklch(0.6 0.12 350);
+  --sidebar: oklch(0.25 0.05 350);
+  --sidebar-foreground: oklch(0.95 0.02 350);
+  --sidebar-primary: oklch(0.4 0.08 350);
+  --sidebar-primary-foreground: oklch(0.95 0.02 350);
+  --sidebar-accent: oklch(0.3 0.06 350);
+  --sidebar-accent-foreground: oklch(0.95 0.02 350);
+  --sidebar-border: oklch(1 0 0 / 15%);
+  --sidebar-ring: oklch(0.4 0.08 350);
 }
 
 @layer base {
@@ -159,7 +151,7 @@
     font-family: var(--font-sans);
     -webkit-tap-highlight-color: transparent;
     
-    /* Efek Tekstur Kain / Vintage Paper */
+    /* Efek Tekstur Kain / Vintage Paper (Dipertahankan) */
     &::after {
       content: "";
       position: fixed;
@@ -171,25 +163,54 @@
       mix-blend-mode: multiply;
     }
   }
+
+  /* Gaya Tombol ala Coquette (Bulat & Huruf Kapital) */
+  button, .btn {
+    border-radius: 9999px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
 }
 
+/* =======================================================
+   UTILITIES POLA (PATTERN) SEPERTI GAMBAR
+   ======================================================= */
+
+/* Pola Grid / Kotak-kotak */
+@utility pattern-grid {
+  background-color: var(--color-card);
+  background-image:
+    linear-gradient(to right, oklch(1 0 0 / 70%) 2px, transparent 2px),
+    linear-gradient(to bottom, oklch(1 0 0 / 70%) 2px, transparent 2px);
+  background-size: 24px 24px;
+}
+
+/* Pola Polkadot / Titik */
+@utility pattern-dots {
+  background-color: var(--color-card);
+  background-image: radial-gradient(var(--color-primary) 2px, transparent 2px);
+  background-size: 20px 20px;
+}
+
+/* Menimpa stripes lama menjadi pola garis vertikal ala buku tulis vintage */
 @utility stripes {
+  background-color: var(--color-card);
   background-image: repeating-linear-gradient(
     90deg,
-    var(--sky) 0px,
-    var(--sky) 34px,
-    var(--muted) 34px,
-    var(--muted) 48px
+    oklch(1 0 0 / 70%) 0px,
+    oklch(1 0 0 / 70%) 3px,
+    transparent 3px,
+    transparent 14px
   );
 }
 
 @utility stripes-thin {
   background-image: repeating-linear-gradient(
-    90deg,
-    var(--primary) 0px,
-    var(--primary) 10px,
-    var(--card) 10px,
-    var(--card) 20px
+    45deg, 
+    var(--color-primary) 0, 
+    var(--color-primary) 2px, 
+    transparent 2px, 
+    transparent 4px
   );
 }
 
