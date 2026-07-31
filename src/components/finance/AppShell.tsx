@@ -39,7 +39,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   }, [pathname]);
   
   return (
-    <div className="min-h-screen stripes">
+    <div className="min-h-screen">
       <header className="sticky top-0 z-20">
         <div className="flex items-center justify-between bg-card px-4 py-3">
           <Link to="/" className="hand text-2xl font-bold text-primary">
